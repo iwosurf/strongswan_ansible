@@ -1,0 +1,71 @@
+#Server update repository indexes
+- name: update repository
+  apt:
+    upgrade: dist
+
+#install strongswan package
+- name: install strongswan
+  apt:
+    name: "{{ item }}"
+    install-recommends: no
+    state: present
+  with_items:
+    - strongswan
+
+#Allow IP Forwarding
+- name: Allow forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: 1
+    state: present
+  tags:
+    - network
+
+#Allow IP accept redirects
+- name: Allow forwarding
+  sysctl:
+    name: net.ipv4.conf.all.accept_redirects
+    value: 0
+    state: present
+  tags:
+    - network
+
+#Allow IP send redirects
+- name: Allow forwarding
+  sysctl:
+    name: net.ipv4.conf.all.send_redirects
+    value: 1
+    state: present
+  tags:
+    - network
+
+#create preshared key
+- name: Execute the script
+  become: yes
+  command: openssl rand -base64 64 -out key
+
+#copy preshared key
+- name: copy preshared key
+  local_action: copy content={{ preshared_key }} dest=/key
+
+#setup preshared_key
+- name: config ipsec.secrets
+  template:
+    src: "{{ item.src }}"
+    dest: /etc/{{ item.dest }}
+  with_items:
+    - src: ipsec.secrets
+      dest: ipsec.secrets
+  tags:
+    - configuration
+
+#setup preshared_key
+- name: config ipsec.secrets
+  template:
+    src: "{{ item.src }}"
+    dest: /etc/{{ item.dest }}
+  with_items:
+    - src: ipsec.conf
+      dest: ipsec.conf
+  tags:
+    - configuration

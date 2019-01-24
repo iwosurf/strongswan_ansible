@@ -1,0 +1,13 @@
+---
+
+# ipsec.secrets config
+source_gatewayleft: 32.28.165.170
+source_gatewayright: 54.28.205.20
+preshared_key: ""
+
+# ipsec.conf
+connection_name: AWS to Berlin
+leftid: 53.16.140.202
+leftsubnet: 11.11.28.2/25
+right: 52.16.45.49
+rightsubnet: 11.10.142.2
